@@ -1,0 +1,248 @@
+{
+  "entities": {
+    "VaultConfig": {
+      "title": "VaultConfig",
+      "description": "Client-derived vault salt and encrypted auth-check token",
+      "type": "object",
+      "properties": {
+        "salt": { "type": "string", "description": "Base64 random salt for PBKDF2" },
+        "authCheck": { "type": "string", "description": "Encrypted verification token ciphertext" },
+        "iv": { "type": "string", "description": "Initialization vector for authCheck" },
+        "autoLockMinutes": { "type": "number", "description": "Inactivity timer in minutes" },
+        "updatedAt": { "type": "string", "description": "ISO timestamp of configuration" }
+      }
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile, gentle preferences, mood state, and vault metadata",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Authenticated user UID" },
+        "name": { "type": "string", "description": "Display name" },
+        "email": { "type": "string", "description": "Account email address" },
+        "subtitle": { "type": "string", "description": "Gentle greeting subtitle" },
+        "lowEnergyMode": { "type": "boolean", "description": "Whether low energy mode is active" },
+        "currentMood": { "type": "string", "enum": ["serene", "grateful", "calm", "reflective", "hopeful"], "description": "Current mood" },
+        "journalAwareAI": { "type": "boolean", "description": "Whether AI companion may access reflections" },
+        "aiFriendName": { "type": "string", "description": "Custom companion name" },
+        "theme": { "type": "string", "description": "UI theme name" },
+        "vaultConfig": {
+          "type": "object",
+          "$ref": "VaultConfig",
+          "description": "Client-derived vault salt and encrypted auth-check token. Never contains PIN or plaintext."
+        },
+        "createdAt": { "type": "string", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "description": "Last update timestamp" }
+      },
+      "required": ["uid", "name"]
+    },
+    "Task": {
+      "title": "Task",
+      "description": "Gentle daily anchors and intentions",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique task ID" },
+        "title": { "type": "string", "description": "Intention text" },
+        "category": { "type": "string", "description": "Category name" },
+        "completed": { "type": "boolean", "description": "Completion state" },
+        "isLowEnergyTask": { "type": "boolean", "description": "Whether suitable for low energy days" },
+        "createdAt": { "type": "string", "description": "Creation ISO timestamp" },
+        "updatedAt": { "type": "string", "description": "Last update ISO timestamp" }
+      },
+      "required": ["id", "title", "completed"]
+    },
+    "JournalEntry": {
+      "title": "JournalEntry",
+      "description": "Personal reflection and journal entry",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique entry ID" },
+        "title": { "type": "string", "description": "Reflection title" },
+        "content": { "type": "string", "description": "Reflection body" },
+        "date": { "type": "string", "description": "Formatted date string" },
+        "time": { "type": "string", "description": "Optional time of day" },
+        "mood": { "type": "string", "description": "Mood associated with entry" },
+        "tags": { "type": "array", "description": "Topic tags" },
+        "readTimeMinutes": { "type": "number", "description": "Calculated reading time" },
+        "isPinned": { "type": "boolean", "description": "Whether pinned to top" },
+        "createdAt": { "type": "string", "description": "Creation ISO timestamp" },
+        "updatedAt": { "type": "string", "description": "Last update ISO timestamp" }
+      },
+      "required": ["id", "title", "content", "date"]
+    },
+    "Dream": {
+      "title": "Dream",
+      "description": "Aspiration, wish, or vision milestone",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique dream ID" },
+        "title": { "type": "string", "description": "Aspiration title" },
+        "category": { "type": "string", "description": "Category: Personal, Career, Travel, Learning, Experiences, Other" },
+        "status": { "type": "string", "enum": ["Dreaming", "In Progress", "Completed"], "description": "Current status" },
+        "description": { "type": "string", "description": "Description and thoughts" },
+        "progressPercent": { "type": "number", "description": "Heart alignment or progress (0-100)" },
+        "timeframe": { "type": "string", "description": "Target timeframe string" },
+        "targetDate": { "type": "string", "description": "Optional ISO target date" },
+        "coverImage": { "type": "string", "description": "Optional cover image URL" },
+        "pinnedToHome": { "type": "boolean", "description": "Whether highlighted on home sanctuary" },
+        "createdAt": { "type": "string", "description": "Creation ISO timestamp" },
+        "updatedAt": { "type": "string", "description": "Last update ISO timestamp" }
+      },
+      "required": ["id", "title", "category"]
+    },
+    "FutureLetter": {
+      "title": "FutureLetter",
+      "description": "Sealed letter to be unlocked at a future date",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique letter ID" },
+        "title": { "type": "string", "description": "Salutation or title" },
+        "content": { "type": "string", "description": "Letter body text" },
+        "openDate": { "type": "string", "description": "Scheduled unlock date (YYYY-MM-DD)" },
+        "mood": { "type": "string", "description": "Emotional state at the time of writing" },
+        "isSealed": { "type": "boolean", "description": "Whether currently locked/sealed" },
+        "createdAt": { "type": "string", "description": "Creation ISO timestamp" }
+      },
+      "required": ["id", "title", "content", "openDate"]
+    },
+    "CalendarEvent": {
+      "title": "CalendarEvent",
+      "description": "Sanctuary ritual or calendar event",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique event ID" },
+        "title": { "type": "string", "description": "Event title" },
+        "time": { "type": "string", "description": "Time string" },
+        "date": { "type": "string", "description": "Date string" },
+        "type": { "type": "string", "description": "Ritual type" },
+        "description": { "type": "string", "description": "Optional notes" }
+      },
+      "required": ["id", "title", "date"]
+    },
+    "MemoryMetadata": {
+      "title": "MemoryMetadata",
+      "description": "Memory photo metadata with Google Drive link and optional micro-thumbnail. Full binary stored on Drive.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique memory ID" },
+        "title": { "type": "string", "description": "Memory title" },
+        "caption": { "type": "string", "description": "Reflection note or caption" },
+        "date": { "type": "string", "description": "Date captured" },
+        "location": { "type": "string", "description": "Optional location name" },
+        "category": { "type": "string", "description": "Category name" },
+        "aspect": { "type": "string", "enum": ["square", "portrait", "landscape"], "description": "Aspect ratio" },
+        "driveFileId": { "type": "string", "description": "Google Drive file ID for full resolution image" },
+        "thumbnailDataUrl": { "type": "string", "description": "Optional micro-thumbnail preview (<25KB)" },
+        "createdAt": { "type": "string", "description": "Creation ISO timestamp" },
+        "updatedAt": { "type": "string", "description": "Last update ISO timestamp" }
+      },
+      "required": ["id", "title", "date"]
+    },
+    "FolderItem": {
+      "title": "FolderItem",
+      "description": "Folder hierarchy item for My Files",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique folder ID" },
+        "name": { "type": "string", "description": "Folder name" },
+        "parentId": { "type": "string", "description": "Parent folder ID or null" },
+        "isDefault": { "type": "boolean", "description": "Whether system default folder" },
+        "color": { "type": "string", "description": "Folder accent color" },
+        "createdAt": { "type": "string", "description": "Creation ISO timestamp" }
+      },
+      "required": ["id", "name"]
+    },
+    "FileItemMetadata": {
+      "title": "FileItemMetadata",
+      "description": "Document metadata for My Files with Google Drive pointer. Raw binary stored in Google Drive.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique file ID" },
+        "name": { "type": "string", "description": "File name" },
+        "folderId": { "type": "string", "description": "Containing folder ID" },
+        "size": { "type": "number", "description": "File size in bytes" },
+        "mimeType": { "type": "string", "description": "MIME type" },
+        "extension": { "type": "string", "description": "File extension" },
+        "driveFileId": { "type": "string", "description": "Google Drive file ID for full file binary" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "description": "Update timestamp" }
+      },
+      "required": ["id", "name", "folderId", "size"]
+    },
+    "VaultEncryptedRecord": {
+      "title": "VaultEncryptedRecord",
+      "description": "Client-encrypted record. Strictly zero-knowledge AES-GCM ciphertext + IV. Plaintext never stored or transmitted.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique record ID" },
+        "parentId": { "type": "string", "description": "Encrypted parent folder ID or null" },
+        "type": { "type": "string", "enum": ["folder", "file", "note"], "description": "Record type" },
+        "ciphertext": { "type": "string", "description": "Base64 AES-GCM 256 ciphertext" },
+        "iv": { "type": "string", "description": "Base64 12-byte initialization vector" },
+        "createdAt": { "type": "string", "description": "Creation ISO timestamp" },
+        "updatedAt": { "type": "string", "description": "Last update ISO timestamp" }
+      },
+      "required": ["id", "type", "ciphertext", "iv"]
+    },
+    "TombstoneRecord": {
+      "title": "TombstoneRecord",
+      "description": "Safe tombstone to prevent resurrection of deleted events, memories, files, and folders across multi-device or offline sync",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique deleted record ID" },
+        "itemType": { "type": "string", "enum": ["event", "memory", "file", "folder"], "description": "Type of item deleted" },
+        "deletedAt": { "type": "string", "description": "ISO timestamp of deletion" },
+        "deletedAtMs": { "type": "number", "description": "Numeric timestamp of deletion" },
+        "uid": { "type": "string", "description": "Owner user UID" },
+        "parentFolderId": { "type": "string", "description": "Optional parent folder ID for cascade checks" }
+      },
+      "required": ["id", "itemType", "deletedAt", "deletedAtMs", "uid"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile, gentle sanctuary settings, and vault verification salt"
+    },
+    "/users/{userId}/tasks/{taskId}": {
+      "schema": "Task",
+      "description": "User daily intentions and low energy anchors"
+    },
+    "/users/{userId}/journal/{entryId}": {
+      "schema": "JournalEntry",
+      "description": "User personal reflections and journal entries"
+    },
+    "/users/{userId}/dreams/{dreamId}": {
+      "schema": "Dream",
+      "description": "User aspirations, wishes, and milestones"
+    },
+    "/users/{userId}/letters/{letterId}": {
+      "schema": "FutureLetter",
+      "description": "User time-sealed letters to future self"
+    },
+    "/users/{userId}/events/{eventId}": {
+      "schema": "CalendarEvent",
+      "description": "User calendar events and rituals"
+    },
+    "/users/{userId}/memories/{memoryId}": {
+      "schema": "MemoryMetadata",
+      "description": "User memory photo metadata with Google Drive link"
+    },
+    "/users/{userId}/folders/{folderId}": {
+      "schema": "FolderItem",
+      "description": "User My Files folder structure"
+    },
+    "/users/{userId}/files/{fileId}": {
+      "schema": "FileItemMetadata",
+      "description": "User document metadata with Google Drive link"
+    },
+    "/users/{userId}/vault_records/{recordId}": {
+      "schema": "VaultEncryptedRecord",
+      "description": "User client-encrypted private vault items (AES-GCM ciphertext only)"
+    },
+    "/users/{userId}/tombstones/{tombstoneId}": {
+      "schema": "TombstoneRecord",
+      "description": "User deletion tombstones for multi-device synchronization integrity"
+    }
+  }
+}

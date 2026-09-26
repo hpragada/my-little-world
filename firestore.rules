@@ -1,0 +1,86 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // User profile document and all subcollections
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+
+      // Tasks subcollection
+      match /tasks/{taskId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Journal subcollection
+      match /journal/{entryId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Dreams subcollection
+      match /dreams/{dreamId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Future Letters subcollection
+      match /letters/{letterId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Calendar Events subcollection
+      match /events/{eventId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Memory metadata subcollection (Binaries in Google Drive)
+      match /memories/{memoryId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Folder hierarchy subcollection
+      match /folders/{folderId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // File metadata subcollection (Binaries in Google Drive)
+      match /files/{fileId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Encrypted Vault records subcollection (Strictly AES-GCM ciphertext + IV)
+      match /vault_records/{recordId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Safe deletion tombstones (Phase D1 & D2)
+      match /tombstones/{tombstoneId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId)
+          && request.resource.data.uid == userId
+          && request.resource.data.itemType in ['event', 'memory', 'file', 'folder']
+          && request.resource.data.id is string
+          && request.resource.data.deletedAt is string
+          && request.resource.data.deletedAtMs is number;
+        allow update: if isOwner(userId)
+          && request.resource.data.uid == userId
+          && request.resource.data.itemType == resource.data.itemType
+          && request.resource.data.id == resource.data.id
+          && request.resource.data.deletedAtMs >= resource.data.deletedAtMs;
+        allow delete: if isOwner(userId);
+      }
+    }
+
+    // Default deny rule for any undefined paths
+    match /{document=**} {
+      allow read, write: false;
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "firestore": [
+    {
+      "database": "ai-studio-mylittleworld-0eebf553-6940-4271-ba49-6c5af415f62c",
+      "rules": "firestore.rules"
+    }
+  ]
+}

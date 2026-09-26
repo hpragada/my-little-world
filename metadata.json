@@ -1,0 +1,6 @@
+{
+  "name": "My Little World",
+  "description": "A private, aesthetic digital sanctuary to manage your personal life, journal, memories, dreams, and quiet moments.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
